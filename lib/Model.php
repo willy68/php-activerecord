@@ -1673,8 +1673,8 @@ class Model
 		if ($results != ($expected = count($values)))
 		{
 			$class = get_called_class();
-			if (is_array($values))
-				$values = join(',',$values);
+
+			$values = join(',',$values);
 
 			if ($expected == 1)
 			{
