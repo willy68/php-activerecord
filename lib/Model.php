@@ -826,6 +826,7 @@ class Model
 			if (($conn = static::connection()) instanceof OciAdapter)
 			{
 				// terrible oracle makes us select the nextval first
+				/** @var OciAdapter $conn */
 				$attributes[$pk] = $conn->get_next_sequence_value($table->sequence);
 				$table->insert($attributes);
 				$this->attributes[$pk] = $attributes[$pk];
