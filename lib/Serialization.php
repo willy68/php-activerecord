@@ -1,8 +1,11 @@
 <?php
+
 /**
  * @package ActiveRecord
  */
+
 namespace ActiveRecord;
+
 use XmlWriter;
 
 /**
@@ -107,47 +110,42 @@ abstract class Serialization
 		$this->check_except();
 		$this->check_methods();
 		$this->check_include();
-		$this->check_only_method();        
+		$this->check_only_method();
 	}
 
 	private function check_only()
 	{
-		if (isset($this->options['only']))
-		{
+		if (isset($this->options['only'])) {
 			$this->options_to_a('only');
 
-			$exclude = array_diff(array_keys($this->attributes),$this->options['only']);
-			$this->attributes = array_diff_key($this->attributes,array_flip($exclude));
+			$exclude = array_diff(array_keys($this->attributes), $this->options['only']);
+			$this->attributes = array_diff_key($this->attributes, array_flip($exclude));
 		}
 	}
 
 	private function check_except()
 	{
-		if (isset($this->options['except']) && !isset($this->options['only']))
-		{
+		if (isset($this->options['except']) && !isset($this->options['only'])) {
 			$this->options_to_a('except');
-			$this->attributes = array_diff_key($this->attributes,array_flip($this->options['except']));
+			$this->attributes = array_diff_key($this->attributes, array_flip($this->options['except']));
 		}
 	}
 
 	private function check_methods()
 	{
-		if (isset($this->options['methods']))
-		{
+		if (isset($this->options['methods'])) {
 			$this->options_to_a('methods');
 
-			foreach ($this->options['methods'] as $method)
-			{
+			foreach ($this->options['methods'] as $method) {
 				if (method_exists($this->model, $method))
 					$this->attributes[$method] = $this->model->$method();
 			}
 		}
 	}
-	
+
 	private function check_only_method()
 	{
-		if (isset($this->options['only_method']))
-		{
+		if (isset($this->options['only_method'])) {
 			$method = $this->options['only_method'];
 			if (method_exists($this->model, $method))
 				$this->attributes = $this->model->$method();
@@ -156,16 +154,13 @@ abstract class Serialization
 
 	private function check_include()
 	{
-		if (isset($this->options['include']))
-		{
+		if (isset($this->options['include'])) {
 			$this->options_to_a('include');
 
 			$serializer_class = get_class($this);
 
-			foreach ($this->options['include'] as $association => $options)
-			{
-				if (!is_array($options))
-				{
+			foreach ($this->options['include'] as $association => $options) {
+				if (!is_array($options)) {
 					$association = $options;
 					$options = array();
 				}
@@ -173,21 +168,15 @@ abstract class Serialization
 				try {
 					$assoc = $this->model->$association;
 
-					if ($assoc === null)
-					{
+					if ($assoc === null) {
 						$this->attributes[$association] = null;
-					}
-					elseif (!is_array($assoc))
-					{
+					} elseif (!is_array($assoc)) {
 						$serialized = new $serializer_class($assoc, $options);
 						$this->attributes[$association] = $serialized->to_a();;
-					}
-					else
-					{
+					} else {
 						$includes = array();
 
-						foreach ($assoc as $a)
-						{
+						foreach ($assoc as $a) {
 							$serialized = new $serializer_class($a, $options);
 
 							if ($this->includes_with_class_name_element)
@@ -198,9 +187,7 @@ abstract class Serialization
 
 						$this->attributes[$association] = $includes;
 					}
-
-				} catch (UndefinedPropertyException $e) {
-					;//move along
+				} catch (UndefinedPropertyException $e) {; //move along
 				}
 			}
 		}
@@ -219,8 +206,7 @@ abstract class Serialization
 	final public function to_a()
 	{
 		$date_class = Config::instance()->get_date_class();
-		foreach ($this->attributes as &$value)
-		{
+		foreach ($this->attributes as &$value) {
 			if ($value instanceof $date_class)
 				$value = $value->format(self::$DATETIME_FORMAT);
 		}
@@ -287,7 +273,7 @@ class XmlSerializer extends Serialization
 	public function __construct(Model $model, &$options)
 	{
 		$this->includes_with_class_name_element = true;
-		parent::__construct($model,$options);
+		parent::__construct($model, $options);
 	}
 
 	public function to_s()
@@ -307,27 +293,23 @@ class XmlSerializer extends Serialization
 		$xml = $this->writer->outputMemory(true);
 
 		if (@$this->options['skip_instruct'] == true)
-			$xml = preg_replace('/<\?xml version.*?\?>/','',$xml);
+			$xml = preg_replace('/<\?xml version.*?\?>/', '', $xml);
 
 		return $xml;
 	}
 
-	private function write($data, $tag=null)
+	private function write($data, $tag = null)
 	{
-		foreach ($data as $attr => $value)
-		{
+		foreach ($data as $attr => $value) {
 			if ($tag != null)
 				$attr = $tag;
 
-			if (is_array($value) || is_object($value))
-			{
-				if (!is_int(key($value)))
-				{
+			if (is_array($value) || is_object($value)) {
+				if (!is_int(key($value))) {
 					$this->writer->startElement($attr);
 					$this->write($value);
 					$this->writer->endElement();
-				}
-				else
+				} else
 					$this->write($value, $attr);
 
 				continue;
@@ -345,32 +327,32 @@ class XmlSerializer extends Serialization
  */
 class CsvSerializer extends Serialization
 {
-  public static $delimiter = ',';
-  public static $enclosure = '"';
+	public static $delimiter = ',';
+	public static $enclosure = '"';
 
-  public function to_s()
-  {
-    if (@$this->options['only_header'] == true) return $this->header();
-    return $this->row();
-  }
+	public function to_s()
+	{
+		if (@$this->options['only_header'] == true) return $this->header();
+		return $this->row();
+	}
 
-  private function header()
-  {
-    return $this->to_csv(array_keys($this->to_a()));
-  }
+	private function header()
+	{
+		return $this->to_csv(array_keys($this->to_a()));
+	}
 
-  private function row()
-  {
-    return $this->to_csv($this->to_a());
-  }
+	private function row()
+	{
+		return $this->to_csv($this->to_a());
+	}
 
-  private function to_csv($arr)
-  {
-    $outstream = fopen('php://temp', 'w');
-    fputcsv($outstream, $arr, self::$delimiter, self::$enclosure);
-    rewind($outstream);
-    $buffer = trim(stream_get_contents($outstream));
-    fclose($outstream);
-    return $buffer;
-  }
+	private function to_csv($arr)
+	{
+		$outstream = fopen('php://temp', 'w');
+		fputcsv($outstream, $arr, self::$delimiter, self::$enclosure);
+		rewind($outstream);
+		$buffer = trim(stream_get_contents($outstream));
+		fclose($outstream);
+		return $buffer;
+	}
 }

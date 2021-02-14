@@ -1,7 +1,9 @@
 <?php
+
 /**
  * @package ActiveRecord
  */
+
 namespace ActiveRecord;
 
 /**
@@ -83,7 +85,7 @@ class SQLBuilder
 			$ret = array_values($this->data);
 
 		if ($this->get_where_values())
-			$ret = array_merge($ret,$this->get_where_values());
+			$ret = array_merge($ret, $this->get_where_values());
 
 		return array_flatten($ret);
 	}
@@ -142,7 +144,7 @@ class SQLBuilder
 		return $this;
 	}
 
-	public function insert($hash, $pk=null, $sequence_name=null)
+	public function insert($hash, $pk = null, $sequence_name = null)
 	{
 		if (!is_hash($hash))
 			throw new ActiveRecordException('Inserting requires a hash.');
@@ -151,7 +153,7 @@ class SQLBuilder
 		$this->data = $hash;
 
 		if ($pk && $sequence_name)
-			$this->sequence = array($pk,$sequence_name);
+			$this->sequence = array($pk, $sequence_name);
 
 		return $this;
 	}
@@ -185,20 +187,19 @@ class SQLBuilder
 		if (!trim($order))
 			return $order;
 
-		$parts = explode(',',$order);
+		$parts = explode(',', $order);
 
-		for ($i=0,$n=count($parts); $i<$n; ++$i)
-		{
+		for ($i = 0, $n = count($parts); $i < $n; ++$i) {
 			$v = strtolower($parts[$i]);
 
-			if (strpos($v,' asc') !== false)
-				$parts[$i] = preg_replace('/asc/i','DESC',$parts[$i]);
-			elseif (strpos($v,' desc') !== false)
-				$parts[$i] = preg_replace('/desc/i','ASC',$parts[$i]);
+			if (strpos($v, ' asc') !== false)
+				$parts[$i] = preg_replace('/asc/i', 'DESC', $parts[$i]);
+			elseif (strpos($v, ' desc') !== false)
+				$parts[$i] = preg_replace('/desc/i', 'ASC', $parts[$i]);
 			else
 				$parts[$i] .= ' DESC';
 		}
-		return join(',',$parts);
+		return join(',', $parts);
 	}
 
 	/**
@@ -211,31 +212,26 @@ class SQLBuilder
 	 * @param $map A hash of "mapped_column_name" => "real_column_name"
 	 * @return A conditions array in the form array(sql_string, value1, value2,...)
 	 */
-	public static function create_conditions_from_underscored_string(Connection $connection, $name, &$values=array(), &$map=null)
+	public static function create_conditions_from_underscored_string(Connection $connection, $name, &$values = array(), &$map = null)
 	{
 		if (!$name)
 			return null;
 
-		$parts = preg_split('/(_and_|_or_)/i',$name,-1,PREG_SPLIT_DELIM_CAPTURE);
+		$parts = preg_split('/(_and_|_or_)/i', $name, -1, PREG_SPLIT_DELIM_CAPTURE);
 		$num_values = is_null($values) ? 0 : count($values);
 		$conditions = array('');
 
-		for ($i=0,$j=0,$n=count($parts); $i<$n; $i+=2,++$j)
-		{
+		for ($i = 0, $j = 0, $n = count($parts); $i < $n; $i += 2, ++$j) {
 			if ($i >= 2)
-				$conditions[0] .= preg_replace(array('/_and_/i','/_or_/i'),array(' AND ',' OR '),$parts[$i-1]);
+				$conditions[0] .= preg_replace(array('/_and_/i', '/_or_/i'), array(' AND ', ' OR '), $parts[$i - 1]);
 
-			if ($j < $num_values)
-			{
-				if (!is_null($values[$j]))
-				{
+			if ($j < $num_values) {
+				if (!is_null($values[$j])) {
 					$bind = is_array($values[$j]) ? ' IN(?)' : '=?';
 					$conditions[] = $values[$j];
-				}
-				else
+				} else
 					$bind = ' IS NULL';
-			}
-			else
+			} else
 				$bind = ' IS NULL';
 
 			// map to correct name if $map was supplied
@@ -254,13 +250,12 @@ class SQLBuilder
 	 * @param $map A hash of "mapped_column_name" => "real_column_name"
 	 * @return array A hash of array(name => value, ...)
 	 */
-	public static function create_hash_from_underscored_string($name, &$values=array(), &$map=null)
+	public static function create_hash_from_underscored_string($name, &$values = array(), &$map = null)
 	{
-		$parts = preg_split('/(_and_|_or_)/i',$name);
+		$parts = preg_split('/(_and_|_or_)/i', $name);
 		$hash = array();
 
-		for ($i=0,$n=count($parts); $i<$n; ++$i)
-		{
+		for ($i = 0, $n = count($parts); $i < $n; ++$i) {
 			// map to correct name if $map was supplied
 			$name = $map && isset($map[$parts[$i]]) ? $map[$parts[$i]] : $parts[$i];
 			$hash[$name] = $values[$i];
@@ -275,15 +270,14 @@ class SQLBuilder
 	 * @param array $hash
 	 * @return array $new
 	 */
-	private function prepend_table_name_to_fields($hash=array())
+	private function prepend_table_name_to_fields($hash = array())
 	{
 		$new = array();
 		$table = $this->connection->quote_name($this->table);
 
-		foreach ($hash as $key => $value)
-		{
+		foreach ($hash as $key => $value) {
 			$k = $this->connection->quote_name($key);
-			$new[$table.'.'.$k] = $value;
+			$new[$table . '.' . $k] = $value;
 		}
 
 		return $new;
@@ -294,23 +288,18 @@ class SQLBuilder
 		require_once 'Expressions.php';
 		$num_args = count($args);
 
-		if ($num_args == 1 && is_hash($args[0]))
-		{
+		if ($num_args == 1 && is_hash($args[0])) {
 			$hash = is_null($this->joins) ? $args[0] : $this->prepend_table_name_to_fields($args[0]);
-			$e = new Expressions($this->connection,$hash);
+			$e = new Expressions($this->connection, $hash);
 			$this->where = $e->to_s();
 			$this->where_values = array_flatten($e->values());
-		}
-		elseif ($num_args > 0)
-		{
+		} elseif ($num_args > 0) {
 			// if the values has a nested array then we'll need to use Expressions to expand the bind marker for us
-			$values = array_slice($args,1);
+			$values = array_slice($args, 1);
 
-			foreach ($values as $name => &$value)
-			{
-				if (is_array($value))
-				{
-					$e = new Expressions($this->connection,$args[0]);
+			foreach ($values as $name => &$value) {
+				if (is_array($value)) {
+					$e = new Expressions($this->connection, $args[0]);
 					$e->bind_values($values);
 					$this->where = $e->to_s();
 					$this->where_values = array_flatten($e->values());
@@ -331,13 +320,12 @@ class SQLBuilder
 		if ($this->where)
 			$sql .= " WHERE $this->where";
 
-		if ($this->connection->accepts_limit_and_order_for_update_and_delete())
-		{
+		if ($this->connection->accepts_limit_and_order_for_update_and_delete()) {
 			if ($this->order)
 				$sql .= " ORDER BY $this->order";
 
 			if ($this->limit)
-				$sql = $this->connection->limit($sql,null,$this->limit);
+				$sql = $this->connection->limit($sql, null, $this->limit);
 		}
 
 		return $sql;
@@ -346,18 +334,16 @@ class SQLBuilder
 	private function build_insert()
 	{
 		require_once 'Expressions.php';
-		$keys = join(',',$this->quoted_key_names());
+		$keys = join(',', $this->quoted_key_names());
 
-		if ($this->sequence)
-		{
+		if ($this->sequence) {
 			$sql =
 				"INSERT INTO $this->table($keys," . $this->connection->quote_name($this->sequence[0]) .
 				") VALUES(?," . $this->connection->next_sequence_value($this->sequence[1]) . ")";
-		}
-		else
+		} else
 			$sql = "INSERT INTO $this->table($keys) VALUES(?)";
 
-		$e = new Expressions($this->connection,$sql,array_values($this->data));
+		$e = new Expressions($this->connection, $sql, array_values($this->data));
 		return $e->to_s();
 	}
 
@@ -381,7 +367,7 @@ class SQLBuilder
 			$sql .= " ORDER BY $this->order";
 
 		if ($this->limit || $this->offset)
-			$sql = $this->connection->limit($sql,$this->offset,$this->limit);
+			$sql = $this->connection->limit($sql, $this->offset, $this->limit);
 
 		return $sql;
 	}
@@ -398,13 +384,12 @@ class SQLBuilder
 		if ($this->where)
 			$sql .= " WHERE $this->where";
 
-		if ($this->connection->accepts_limit_and_order_for_update_and_delete())
-		{
+		if ($this->connection->accepts_limit_and_order_for_update_and_delete()) {
 			if ($this->order)
 				$sql .= " ORDER BY $this->order";
 
 			if ($this->limit)
-				$sql = $this->connection->limit($sql,null,$this->limit);
+				$sql = $this->connection->limit($sql, null, $this->limit);
 		}
 
 		return $sql;

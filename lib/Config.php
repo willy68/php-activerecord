@@ -1,8 +1,11 @@
 <?php
+
 /**
  * @package ActiveRecord
  */
+
 namespace ActiveRecord;
+
 use Closure;
 
 /**
@@ -96,7 +99,7 @@ class Config extends Singleton
 	 * $cfg = ActiveRecord\Config::instance();
 	 * $cfg->set_model_directory('/path/to/your/model_directory');
 	 * $cfg->set_connections(array('development' =>
-  	 *   'mysql://username:password@localhost/database_name'));
+	 *   'mysql://username:password@localhost/database_name'));
 	 * </code>
 	 *
 	 * @param Closure $initializer A closure
@@ -120,7 +123,7 @@ class Config extends Singleton
 	 * @return void
 	 * @throws ActiveRecord\ConfigException
 	 */
-	public function set_connections($connections, $default_connection=null)
+	public function set_connections($connections, $default_connection = null)
 	{
 		if (!is_array($connections))
 			throw new ConfigException("Connections must be an array");
@@ -162,7 +165,7 @@ class Config extends Singleton
 	 */
 	public function get_default_connection_string()
 	{
-		return array_key_exists($this->default_connection,$this->connections) ?
+		return array_key_exists($this->default_connection, $this->connections) ?
 			$this->connections[$this->default_connection] : null;
 	}
 
@@ -291,8 +294,8 @@ class Config extends Singleton
 	 * @param string $url Url to your cache server.
 	 * @param array $options Array of options
 	 */
-	public function set_cache($url, $options=array())
+	public function set_cache($url, $options = array())
 	{
-		Cache::initialize($url,$options);
+		Cache::initialize($url, $options);
 	}
 }

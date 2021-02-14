@@ -1,7 +1,9 @@
 <?php
+
 /**
  * @package ActiveRecord
  */
+
 namespace ActiveRecord;
 
 /**
@@ -40,7 +42,8 @@ class Column
 		'double'	=> self::DECIMAL,
 		'numeric'	=> self::DECIMAL,
 		'decimal'	=> self::DECIMAL,
-		'dec'		=> self::DECIMAL);
+		'dec'		=> self::DECIMAL
+	);
 
 	/**
 	 * The true name of this column.
@@ -155,11 +158,13 @@ class Column
 		if ($value === null)
 			return null;
 
-		switch ($this->type)
-		{
-			case self::STRING:	return (string)$value;
-			case self::INTEGER:	return static::castIntegerSafely($value);
-			case self::DECIMAL:	return (double)$value;
+		switch ($this->type) {
+			case self::STRING:
+				return (string)$value;
+			case self::INTEGER:
+				return static::castIntegerSafely($value);
+			case self::DECIMAL:
+				return (float)$value;
 			case self::DATETIME:
 			case self::DATE:
 				if (!$value)
@@ -191,7 +196,7 @@ class Column
 		if ($this->raw_type == 'integer')
 			$this->raw_type = 'int';
 
-		if (array_key_exists($this->raw_type,self::$TYPE_MAPPING))
+		if (array_key_exists($this->raw_type, self::$TYPE_MAPPING))
 			$this->type = self::$TYPE_MAPPING[$this->raw_type];
 		else
 			$this->type = self::STRING;

@@ -240,7 +240,7 @@ abstract class Connection
 	/**
 	 * Class Connection is a singleton. Access it via instance().
 	 *
-	 * @param array $info Array containing URL parts
+	 * @param \std_class $info Object containing URL parts
 	 * @return Connection
 	 */
 	protected function __construct($info)
@@ -530,11 +530,19 @@ abstract class Connection
 	 */
 	abstract function set_encoding($charset);
 
-	/*
+	/**
 	 * Returns an array mapping of native database types
 	 */
 
 	abstract public function native_database_types();
+
+	/**
+	 * Return columnfrom it's definition array
+	 * 
+	 * @param mixed &$column
+	 * @return \ActiveRecord\Column
+	 */
+	abstract public function create_column(&$column);
 
 	/**
 	 * Specifies whether or not adapter can use LIMIT/ORDER clauses with DELETE & UPDATE operations

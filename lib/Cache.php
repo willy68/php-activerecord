@@ -1,5 +1,7 @@
 <?php
+
 namespace ActiveRecord;
+
 use Closure;
 
 /**
@@ -37,20 +39,18 @@ class Cache
 	 * @param string $url URL to your cache server
 	 * @param array $options Specify additional options
 	 */
-	public static function initialize($url, $options=array())
+	public static function initialize($url, $options = array())
 	{
-		if ($url)
-		{
+		if ($url) {
 			$url = parse_url($url);
 			$file = ucwords(Inflector::instance()->camelize($url['scheme']));
 			$class = "ActiveRecord\\$file";
 			require_once __DIR__ . "/cache/$file.php";
 			static::$adapter = new $class($url);
-		}
-		else
+		} else
 			static::$adapter = null;
 
-		static::$options = array_merge(array('expire' => 30, 'namespace' => ''),$options);
+		static::$options = array_merge(array('expire' => 30, 'namespace' => ''), $options);
 	}
 
 	public static function flush()
@@ -67,13 +67,12 @@ class Cache
 	 * @param $expire in seconds
 	 * @return mixed
 	 */
-	public static function get($key, $closure, $expire=null)
+	public static function get($key, $closure, $expire = null)
 	{
 		if (!static::$adapter)
 			return $closure();
 
-		if (is_null($expire))
-		{
+		if (is_null($expire)) {
 			$expire = static::$options['expire'];
 		}
 
@@ -85,13 +84,12 @@ class Cache
 		return $value;
 	}
 
-	public static function set($key, $var, $expire=null)
+	public static function set($key, $var, $expire = null)
 	{
 		if (!static::$adapter)
 			return;
 
-		if (is_null($expire))
-		{
+		if (is_null($expire)) {
 			$expire = static::$options['expire'];
 		}
 

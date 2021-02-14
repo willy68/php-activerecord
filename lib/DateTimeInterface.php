@@ -1,7 +1,9 @@
 <?php
+
 /**
  * @package ActiveRecord
  */
+
 namespace ActiveRecord;
 
 /**
@@ -26,7 +28,7 @@ interface DateTimeInterface
 	/**
 	 * Formats the DateTime to the specified format.
 	 */
-	public function format($format=null);
+	public function format($format = null);
 
 	/**
 	 * See http://php.net/manual/en/datetime.createfromformat.php

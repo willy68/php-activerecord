@@ -1,7 +1,9 @@
 <?php
+
 /**
  * @package ActiveRecord
  */
+
 namespace ActiveRecord;
 
 /**
@@ -24,7 +26,7 @@ class ConnectionManager extends Singleton
 	 * @param string $name Optional name of a connection
 	 * @return Connection
 	 */
-	public static function get_connection($name=null)
+	public static function get_connection($name = null)
 	{
 		$config = Config::instance();
 		$name = $name ? $name : $config->get_default_connection();
@@ -43,7 +45,7 @@ class ConnectionManager extends Singleton
 	 *
 	 * @param string $name Name of the connection to forget about
 	 */
-	public static function drop_connection($name=null)
+	public static function drop_connection($name = null)
 	{
 		$config = Config::instance();
 		$name = $name ? $name : $config->get_default_connection();

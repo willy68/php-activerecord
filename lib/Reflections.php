@@ -1,8 +1,11 @@
 <?php
+
 /**
  * @package ActiveRecord
  */
+
 namespace ActiveRecord;
+
 use ReflectionClass;
 
 /**
@@ -25,13 +28,13 @@ class Reflections extends Singleton
 	 * @param string $class Name of a class
 	 * @return Reflections $this so you can chain calls like Reflections::instance()->add('class')->get()
 	 */
-	public function add($class=null)
+	public function add($class = null)
 	{
 		$class = $this->get_class($class);
 
 		if (!isset($this->reflections[$class]))
 			$this->reflections[$class] = new ReflectionClass($class);
-			
+
 		return $this;
 	}
 
@@ -48,7 +51,7 @@ class Reflections extends Singleton
 		if (isset($this->reflections[$class]))
 			$this->reflections[$class] = null;
 	}
-	
+
 	/**
 	 * Get a cached ReflectionClass.
 	 *
@@ -56,7 +59,7 @@ class Reflections extends Singleton
 	 * @return mixed null or a ReflectionClass instance
 	 * @throws ActiveRecordException if class was not found
 	 */
-	public function get($class=null)
+	public function get($class = null)
 	{
 		$class = $this->get_class($class);
 
@@ -72,7 +75,7 @@ class Reflections extends Singleton
 	 * @param mixed $mixed An object or name of a class
 	 * @return string
 	 */
-	private function get_class($mixed=null)
+	private function get_class($mixed = null)
 	{
 		if (is_object($mixed))
 			return get_class($mixed);
