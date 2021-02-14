@@ -275,7 +275,7 @@ class Table
 				$nested_includes = array();
 
 			$rel = $this->get_relationship($name, true);
-			$rel->load_eagerly($this, $models, $attrs, $nested_includes);
+			$rel->load_eagerly($this, $nested_includes, $models, $attrs);
 		}
 	}
 
