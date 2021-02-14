@@ -587,7 +587,7 @@ class HasMany extends AbstractRelationship
 		return $record;
 	}
 
-	public function load_eagerly(Table $table, $includes, $models = array(), $attributes = array())
+	public function load_eagerly(Table $table, $includes, $attributes = array(), $models = array())
 	{
 		$this->set_keys($table->class->name);
 		$this->query_and_attach_related_models_eagerly($table, $models, $attributes, $includes, $this->foreign_key, $table->pk);
@@ -708,7 +708,7 @@ class BelongsTo extends AbstractRelationship
 		return $class::first($options);
 	}
 
-	public function load_eagerly(Table $table, $includes, $models = array(), $attributes)
+	public function load_eagerly(Table $table, $includes, $attributes, $models = array())
 	{
 		$this->query_and_attach_related_models_eagerly($table, $models, $attributes, $includes, $this->primary_key, $this->foreign_key);
 	}
